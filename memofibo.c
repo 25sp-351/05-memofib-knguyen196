@@ -1,53 +1,30 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include "fibonacci.h"
 
-// caching (memoizing) version of the Fibonacci function
-typedef long long ( *long_func_ptr )( int num );
+// BEGIN MAIN
 
-long_func_ptr original_provider;
+int main(int argc, char *argv[]) {
+    int test_val;
 
-#define NOT_PRESENT -1
-#define MAX 92
+    if (argc < 2
+            || 1 != sscanf(argv[1],"%d",&test_val)
+            || test_val < 0)
+        return 1;
 
-long long results[MAX] = { [0 ... MAX-1] = NOT_PRESENT };
+    // PROGRAM INITIALIZATION
+    fibonacci_provider = init_cache(fibonacci);
 
+    
+    // PROGRAM FUNCTIONALITY
 
-long long cache( int val ) {
-    if ( val < MAX ) {
-        if ( results[val] == NOT_PRESENT )
-            results[val] = ( *original_provider )( val );
-        return results[val];
+    // how to use it
+    for (int ix=0; ix <= test_val; ix++) {
+        printf(__FILE__ ":%2d   Fibonacci of %d is %lld\n",__LINE__,
+            ix,
+            (*fibonacci_provider)(ix)
+        );
     }
-    return ( *original_provider )( val );
+
+    return 0;
 }
-
-long long fibonacci( int num ) {
-
-    if ( num == 0 ) return 0;
-    if ( num == 1 ) return 1;
-    return cache( num-1 ) + cache( num-2 );
-}
-
-void input( long_func_ptr fibonacci_pointer ) {
-    int n;
-    while (1) {
-        printf("Enter an integer (0 to 91)\n");
-        if ( scanf("%d", &n) == 1 && n >= 0 && n < MAX ) {
-            printf( "Fibonacci(%d) = %lld\n", n, fibonacci_pointer(n) );
-            return;
-        }
-        printf( "Invalid input. Please enter a number between 0 and 91\n" );
-        while ( getchar() != '\n' );
-    }
-}
-
-int main(){
-//install it in main
-
-original_provider = fibonacci;
-long_func_ptr fibonacci_pointer = cache;
-
-input( fibonacci_pointer );
-return 0;   
-
-}
-

@@ -1,19 +1,23 @@
 CC = clang
-CFLAGS = -Wall -g -D_CRT_SECURE_NO_WARNINGS
-LDFLAGS =
+CFLAGS = -Wall -g -std=c99
 
 TARGET = memofibo
-SRCS = memofibo.c
-OBJS = memofibo.o
+
+
+SRCS = memofibo.c fibonacci.c
+OBJS = $(SRCS:.c=.o)
+
 
 all: $(TARGET)
 
-$(OBJS): $(SRCS)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS)
+
+
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
-$(TARGET): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^
-
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -rf $(OBJS) $(TARGET) *.dSYM
